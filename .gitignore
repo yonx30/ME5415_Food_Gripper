@@ -1,0 +1,9 @@
+.vscode/
+ArticulatedSystemPlugin/
+Main.py.view
+SofaDefrost-SoftRobots-master/
+__pycache__/
+lastUsedGUI.ini
+reduced_caduceusNG.py
+runSofa.ini
+snake.py

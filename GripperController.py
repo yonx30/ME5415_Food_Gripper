@@ -34,9 +34,10 @@ class WholeGripperController(Sofa.Core.Controller):
         
         self.constraints = []
         self.dofs = []
+        self.controller = self.node.gripper.controller.getMechanicalState()
         for i in range(1, 4):
-            self.dofs.append(self.node.getChild('finger' + str(i)).getMechanicalState())
-            self.constraints.append(self.node.getChild('finger' + str(i)).cavity.SurfacePressureConstraint)
+            self.dofs.append(self.node.gripper.getChild('finger' + str(i)).getMechanicalState())
+            self.constraints.append(self.node.gripper.getChild('finger' + str(i)).cavity.SurfacePressureConstraint)
         print("Controller loaded!")
         # self.dofs.append(kw["finger"].getMechanicalState())
         # self.constraints.append(kw["finger"].Cavity.SurfacePressureConstraint)
@@ -66,10 +67,10 @@ class WholeGripperController(Sofa.Core.Controller):
         # print(arr[:,0].min(), arr[:,0].max(), arr[:,1].min(), arr[:,1].max(), arr[:,2].min(), arr[:,2].max())
         # print(self.node.finger1.boxROI.indices.toList())
 
-        # arr = np.array(self.node.finger1.boxROISubTopo.position.toList())
+        # arr = np.array(self.node.gripper.finger1.boxROISubTopo.position.toList())
         # print(arr)
         # print(arr[:,0].min(), arr[:,0].max(), arr[:,1].min(), arr[:,1].max(), arr[:,2].min(), arr[:,2].max())
-        # print(arr[:,2].argmax())
+        # print(arr[:,1].argmax(), arr[:,2].argmin(),arr[:,2].argmax())
         # print(self.node.finger1.boxROI.pointsInROI.toList())
         # print(self.node.finger1.boxROI.indices.toList())
         
@@ -101,8 +102,11 @@ class WholeGripperController(Sofa.Core.Controller):
 
         elif e["key"] == Sofa.constants.Key.uparrow:
             for i in range(3):
-                results = moveRestPos(self.dofs[i].rest_position.value, 3.0, 0.0, 0.0)
-                self.dofs[i].rest_position.value = results
+                # results = moveRestPos(self.dofs[i].rest_position.value, 3.0, 0.0, 0.0)
+                # self.dofs[i].rest_position.value = results
+                print(self.controller.rest_position.value)
+                results = moveRestPos(self.controller.rest_position.value, 3.0, 0.0, 0.0)
+                self.controller.rest_position.value = results
 
         elif e["key"] == Sofa.constants.Key.downarrow:
             for i in range(3):
