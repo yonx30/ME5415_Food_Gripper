@@ -3,6 +3,7 @@
 import Sofa.Core
 from Sofa.constants import *
 import math
+import numpy as np
 
 
 def moveRestPos(rest_pos, dx, dy, dz):
@@ -25,17 +26,18 @@ def rotateRestPos(rest_pos, rx, centerPosY, centerPosZ):
 
 class WholeGripperController(Sofa.Core.Controller):
 
-    def __init__(self, *a, **kw):
+    def __init__(self, node, pressureLimits:tuple, *a, **kw):
 
         Sofa.Core.Controller.__init__(self, *a, **kw)
-        self.node = kw["node"]
+        self.node = node
+        self.pressureLimits = pressureLimits
         
         self.constraints = []
         self.dofs = []
-        for i in range(1, 2):
+        for i in range(1, 4):
             self.dofs.append(self.node.getChild('finger' + str(i)).getMechanicalState())
             self.constraints.append(self.node.getChild('finger' + str(i)).cavity.SurfacePressureConstraint)
-        print("dasds")
+        print("Controller loaded!")
         # self.dofs.append(kw["finger"].getMechanicalState())
         # self.constraints.append(kw["finger"].Cavity.SurfacePressureConstraint)
 
@@ -55,7 +57,23 @@ class WholeGripperController(Sofa.Core.Controller):
 
     def onKeypressedEvent(self, e):
 
-        increment = 0.1
+        # arr = np.array(self.node.finger1.getObject('tetras').findData('position').value)
+        # print(arr[:,0].min(), arr[:,0].max(), arr[:,1].min(), arr[:,1].max(), arr[:,2].min(), arr[:,2].max())
+
+        # arr = self.node.finger1.boxROI.findData('position').value
+        # arr = np.array(self.node.finger1.boxROI.position.toList())
+        # print(arr)
+        # print(arr[:,0].min(), arr[:,0].max(), arr[:,1].min(), arr[:,1].max(), arr[:,2].min(), arr[:,2].max())
+        # print(self.node.finger1.boxROI.indices.toList())
+
+        # arr = np.array(self.node.finger1.boxROISubTopo.position.toList())
+        # print(arr)
+        # print(arr[:,0].min(), arr[:,0].max(), arr[:,1].min(), arr[:,1].max(), arr[:,2].min(), arr[:,2].max())
+        # print(arr[:,2].argmax())
+        # print(self.node.finger1.boxROI.pointsInROI.toList())
+        # print(self.node.finger1.boxROI.indices.toList())
+        
+        increment = 0.05
 
         # print("dsads")
         # for i in range(3):
@@ -64,19 +82,20 @@ class WholeGripperController(Sofa.Core.Controller):
         #         pressureValue = 1.5
         #     self.constraints[i].value = [pressureValue]
 
+
         if e["key"] == Sofa.constants.Key.space:
-            for i in range(1):
+            for i in range(3):
                 pressureValue = self.constraints[i].value.value[0] + increment
-                if pressureValue > 5:
-                    pressureValue = 5
+                if pressureValue > self.pressureLimits[1]:
+                    pressureValue = self.pressureLimits[1]
                 self.constraints[i].value = [pressureValue]
             print(f"Inflate: {pressureValue}")
 
         if e["key"] == Sofa.constants.Key.minus:
-            for i in range(1):
+            for i in range(3):
                 pressureValue = self.constraints[i].value.value[0] - increment
-                if pressureValue < -5:
-                    pressureValue = -5
+                if pressureValue < self.pressureLimits[0]:
+                    pressureValue = self.pressureLimits[0]
                 self.constraints[i].value = [pressureValue]
             print(f"Deflate: {pressureValue}")
 

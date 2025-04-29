@@ -37,12 +37,12 @@ def add_gripper(rootNode):
         # Describes the internal forces/stresses generated when object is deformed. This particular type corresponds to elastic material deformation w large rotations 
         finger.addObject('TetrahedronFEMForceField', template='Vec3', name='FEM', method='large', poissonRatio=0.3,  youngModulus=youngModulusFingers)#, drawAsEdges=True)
 
-        finger.addObject('BoxROI', name='boxROI', box=[-500, -500, 90, 500, 500, 100]) # Basically bounding box of model
+        finger.addObject('BoxROI', name='boxROI', box=[-25, 0, -100, 25, 0, 100]) # Basically bounding box of model
         finger.addObject('BoxROI', name='boxROISubTopo', box=[-500, -500, -100, 500, 500, 90], strict=False)
 
         # Very large stiffness to essentially fix object in space, using the boxROI as a fixing point
         if i == 0:
-            finger.addObject('RestShapeSpringsForceField', points='@boxROI.indices', stiffness=1e12, angularStiffness=1e12)
+            finger.addObject('RestShapeSpringsForceField', points='@boxROI.indices', stiffness=1, angularStiffness=1)
         else:
             finger.addObject('RestShapeSpringsForceField', points='@../finger1/boxROI.indices', stiffness=1e12, angularStiffness=1e12)
 

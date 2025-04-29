@@ -1,3 +1,13 @@
+def add_marker(rootNode, i:int, position:list, scale:float, color:list=[1,1,0]):
+    # Add sphere to pickup
+    marker = rootNode.addChild(f'marker{i}')
+
+    # Solver/time integrators to calculate system positions and velocities at each time ste
+    #visualization
+    markerVisu = marker.addChild('markerVisu')
+    markerVisu.addObject('MeshOBJLoader', name='loader', filename='mesh/sphere.obj')
+    markerVisu.addObject('OglModel', name='Visual', src='@loader', translation=position, color=color, scale=scale)
+
 
 def add_cube(rootNode, position:list, mass:float, scale:float):
     # Add cube to pickup
