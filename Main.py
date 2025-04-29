@@ -65,7 +65,10 @@ def add_plane(rootNode):
     planeNode.addObject('PointCollisionModel', simulated=False, moving=True)
     planeVisu = planeNode.addChild('visu')
     planeVisu.addObject('MeshSTLLoader', name='loader', filename=cadFilePath+'square_grid.stl', triangulate=True, rotation=[0, 0, 0], scale=2, translation=[0, 0, -10])
-    planeVisu.addObject('OglModel', src='@loader', color=[0.3, 0.3, 0.4, 1])
+    # planeVisu.addObject('MeshOBJLoader', name='loader', filename='mesh/floorFlat.obj', triangulate=True, rotation=[90, 0, 0], scale=10, translation=[0, 0, 0])
+
+    # planeVisu.addObject('OglModel', src='@loader', color=[0.3, 0.3, 0.4, 1])
+    planeVisu.addObject('OglModel', src='@loader', color=[1.0, 0.3, 0.0, 1])
     planeVisu.addObject('BarycentricMapping')
     return rootNode
 
@@ -82,17 +85,25 @@ def createScene(rootNode):
     add_plugins(rootNode)
     add_pipelines(rootNode)
     add_plane(rootNode)
-    add_sphere(rootNode, [30, 0, 20], 0.0001, 15)
-    # add_cube(rootNode, -200, 00, 100, 0.001, 6)
+    # add_sphere(rootNode, [30, 0, 20], 0.0001, 15)
+    add_cube(rootNode, [24, 0, 20], 1.0, 6)
     add_camera(rootNode, [-100, -5000, 50])
     add_gripper(rootNode)
+    # add_sausage(rootNode, [-20, -60, 10], 0.01) # 100g
+    # add_meatball(rootNode, [30, -5, 5], 0.02) # 20g
+    # add_brocolli(rootNode, [25, 0, 5], 0.02) # 20g
+    # add_carrot(rootNode, [30, -100, 5], 0.1) # 100g
+    # add_green_beans(rootNode, [15, 0, 5], 0.0000132) # 132mg
+    # add_spaghetti(rootNode, [15, 0, 1], 0.001) # 1g
+    # add_cookie(rootNode, [10, 0, 5], 0.005) # 5
+    # add_orangeJuice(rootNode, [30, 0, 0], 0.300) # 300g (incl juice weight)
 
-    controller = WholeGripperController(name="controller", node=rootNode, pressureLimits=(-1, 5), inflateIncrement=0.05, moveIncrement=1.0)
+
+    controller = WholeGripperController(name="controller", node=rootNode, pressureLimits=(-1, 5), inflateIncrement=0.2, moveIncrement=1.0)
     rootNode.addObject(controller)
 
     rootNode.addObject('VisualStyle', displayFlags='showVisualModels hideBehaviorModels hideCollisionModels hideBoundingCollisionModels hideForceFields showInteractionForceFields hideWireframe')
     rootNode.findData('gravity').value=[0, 0, -9810]
-
 
     return rootNode
 
