@@ -59,23 +59,19 @@ def add_plane(rootNode):
     planeNode.addObject('MeshTopology', src='@loader')
     planeNode.addObject('MechanicalObject', src='@loader')
 
-    # Add collision models to the plane to prevent object from falling through. Specified to not move during simulation
+    # Add collision models to the plane to prevent object from falling through. 
     planeNode.addObject('TriangleCollisionModel', simulated=False, moving=True)
     planeNode.addObject('LineCollisionModel', simulated=False, moving=True)
     planeNode.addObject('PointCollisionModel', simulated=False, moving=True)
-    # planeNode.addObject('OglModel',name='Visual', src='@loader', color=[1, 0, 0, 1])
     planeVisu = planeNode.addChild('visu')
-    # planeVisu.addObject('MeshOBJLoader', name='loader', filename='mesh/floorFlat.obj', triangulate=True, rotation=[90, 0, 0], scale=10, translation=[0, 0, 0])
     planeVisu.addObject('MeshSTLLoader', name='loader', filename=cadFilePath+'square_grid.stl', triangulate=True, rotation=[0, 0, 0], scale=2, translation=[0, 0, -10])
-    planeVisu.addObject('OglModel', src='@loader', color=[1, 1, 1, 1])
+    planeVisu.addObject('OglModel', src='@loader', color=[0.3, 0.3, 0.4, 1])
     planeVisu.addObject('BarycentricMapping')
     return rootNode
 
 def add_camera(rootNode, position:list):
-    # rootNode.addObject('InteractiveCamera', name='Cam', position=f'{position[0]} {position[1]} {position[2]}', 
-    #                    lookAt="0 0 0", orientation=f"{orientation[0]} {orientation[1]} {orientation[2]}")
     rootNode.addObject('InteractiveCamera', name='camera', position=f'{position[0]} {position[1]} {position[2]}', 
-                       lookAt=f"{position[0]} 0 0", distance=f'{position[0]} {position[1]} {position[2]}')#orientation=f"{orientation[0]} {orientation[1]} {orientation[2]}")
+                       lookAt=f"{position[0]} 0 0", distance=f'{position[0]} {position[1]} {position[2]}')
     # lighting = rootNode.addChild('lighting')
     # lighting.addObject('LightManager')
     # # lighting.addObject('PositionalLight', name='light2', color='256 256 256', attenuation="0.1", position='-100 0 50')
@@ -91,7 +87,7 @@ def createScene(rootNode):
     add_camera(rootNode, [-100, -5000, 50])
     add_gripper(rootNode)
 
-    controller = WholeGripperController(name="controller", node=rootNode, pressureLimits=(-1, 1.5))
+    controller = WholeGripperController(name="controller", node=rootNode, pressureLimits=(-1, 5), inflateIncrement=0.05, moveIncrement=1.0)
     rootNode.addObject(controller)
 
     rootNode.addObject('VisualStyle', displayFlags='showVisualModels hideBehaviorModels hideCollisionModels hideBoundingCollisionModels hideForceFields showInteractionForceFields hideWireframe')

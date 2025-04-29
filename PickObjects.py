@@ -54,7 +54,7 @@ def add_sphere(rootNode, position:list, mass:float, scale:float):
     #collision
     sphereCollis = sphere.addChild('sphereCollis')
 
-    sphereCollis.addObject('MeshOBJLoader', name='loader', filename='mesh/sphere.obj', triangulate=True,  scale=scale+0.1) # Make collision hitbox slightly bigger than visual
+    sphereCollis.addObject('MeshOBJLoader', name='loader', filename='mesh/sphere.obj', triangulate=True,  scale=scale-0.1) # Make collision hitbox slightly bigger than visual
     # sphereCollis.addObject('MeshOBJLoader', name='loader', filename='details/data/mesh/Sphere.obj', triangulate=True,  scale=1)
     # sphereCollis.addObject('MeshSTLLoader', name='loader', filename='details/data/mesh/Sphere.stl', triangulate=True,  scale=1)
 
