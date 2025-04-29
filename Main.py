@@ -4,6 +4,8 @@ from GripperController import WholeGripperController
 from PickObjects import *
 from Gripper import add_gripper
 
+cadFilePath = 'C:/Users/yonx3/OneDrive - National University of Singapore/Documents/NUS Masters/ME5415 Advanced Soft Robotics/Design Project/CAD/'
+
 def add_plugins(rootNode):
     '''Loads in required plugins to root node'''
     pluginNode = rootNode.addChild('PluginNode')
@@ -42,7 +44,7 @@ def add_pipelines(rootNode):
     rootNode.addObject('CollisionPipeline')
     rootNode.addObject('BruteForceBroadPhase')
     rootNode.addObject('BVHNarrowPhase')
-    rootNode.addObject('CollisionResponse', response='FrictionContactConstraint', responseParams='mu=5.0')
+    rootNode.addObject('CollisionResponse', response='FrictionContactConstraint', responseParams='mu=1.0')
     rootNode.addObject('LocalMinDistance', name='Proximity', alarmDistance=5, contactDistance=1, angleCone=0.0)
     rootNode.addObject('BackgroundSetting', color='1 1 1', listening='1')
     rootNode.addObject('OglSceneFrame', style='CubesCones', alignment='TopRight')    
@@ -51,24 +53,28 @@ def add_plane(rootNode):
     planeNode = rootNode.addChild('Plane')
 
     # Load mesh using the appropriate filetype loader
-    planeNode.addObject('MeshOBJLoader', name='loader', filename='mesh/floorFlat.obj', triangulate=True, rotation=[90, 0, 0], scale=10, translation=[0, 0, 0]) # mesh/ folder items universally accessible in SOFA
-    # planeNode.addObject('MeshOBJLoader', name='loader', filename='details/data/mesh/Surface.obj', triangulate=True, rotation=[0, 0, 0], scale=5, translation=[0, 0, 0])#, position=[0, 0, 10, 0, 0, 0, 1])
-    # planeNode.addObject('MeshOBJLoader', name='loader', filename='details/data/mesh/Surface.Stl', triangulate=True, rotation=[0, 0, 270], scale=5, translation=[-122, 0, 0])
+    # planeNode.addObject('MeshOBJLoader', name='loader', filename='mesh/floorFlat.obj', triangulate=True, rotation=[90, 0, 0], scale=10, translation=[0, 0, 0]) # mesh/ folder items universally accessible in SOFA
+    planeNode.addObject('MeshSTLLoader', name='loader', filename=cadFilePath+'square_grid.stl', triangulate=True, rotation=[0, 0, 0], scale=2, translation=[0, 0, -10])
 
     planeNode.addObject('MeshTopology', src='@loader')
     planeNode.addObject('MechanicalObject', src='@loader')
 
     # Add collision models to the plane to prevent object from falling through. Specified to not move during simulation
-    planeNode.addObject('TriangleCollisionModel', simulated=False, moving=False)
-    planeNode.addObject('LineCollisionModel', simulated=False, moving=False)
-    planeNode.addObject('PointCollisionModel', simulated=False, moving=False)
-    planeNode.addObject('OglModel',name='Visual', src='@loader', color=[1, 0, 0, 1])
+    planeNode.addObject('TriangleCollisionModel', simulated=False, moving=True)
+    planeNode.addObject('LineCollisionModel', simulated=False, moving=True)
+    planeNode.addObject('PointCollisionModel', simulated=False, moving=True)
+    # planeNode.addObject('OglModel',name='Visual', src='@loader', color=[1, 0, 0, 1])
+    planeVisu = planeNode.addChild('visu')
+    # planeVisu.addObject('MeshOBJLoader', name='loader', filename='mesh/floorFlat.obj', triangulate=True, rotation=[90, 0, 0], scale=10, translation=[0, 0, 0])
+    planeVisu.addObject('MeshSTLLoader', name='loader', filename=cadFilePath+'square_grid.stl', triangulate=True, rotation=[0, 0, 0], scale=2, translation=[0, 0, -10])
+    planeVisu.addObject('OglModel', src='@loader', color=[1, 1, 1, 1])
+    planeVisu.addObject('BarycentricMapping')
     return rootNode
 
 def add_camera(rootNode, position:list):
     # rootNode.addObject('InteractiveCamera', name='Cam', position=f'{position[0]} {position[1]} {position[2]}', 
     #                    lookAt="0 0 0", orientation=f"{orientation[0]} {orientation[1]} {orientation[2]}")
-    rootNode.addObject('InteractiveCamera', name='Cam', position=f'{position[0]} {position[1]} {position[2]}', 
+    rootNode.addObject('InteractiveCamera', name='camera', position=f'{position[0]} {position[1]} {position[2]}', 
                        lookAt=f"{position[0]} 0 0", distance=f'{position[0]} {position[1]} {position[2]}')#orientation=f"{orientation[0]} {orientation[1]} {orientation[2]}")
     # lighting = rootNode.addChild('lighting')
     # lighting.addObject('LightManager')
@@ -80,9 +86,9 @@ def createScene(rootNode):
     add_plugins(rootNode)
     add_pipelines(rootNode)
     add_plane(rootNode)
-    add_sphere(rootNode, [30, 0, 20], 0.001, 15)
+    add_sphere(rootNode, [30, 0, 20], 0.0001, 15)
     # add_cube(rootNode, -200, 00, 100, 0.001, 6)
-    add_camera(rootNode, [-100, -500, 50])
+    add_camera(rootNode, [-100, -5000, 50])
     add_gripper(rootNode)
 
     controller = WholeGripperController(name="controller", node=rootNode, pressureLimits=(-1, 1.5))

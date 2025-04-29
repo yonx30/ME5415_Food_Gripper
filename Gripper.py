@@ -18,17 +18,16 @@ angles=[0,angle1, angle2]
 
 cadFilePath = 'C:/Users/yonx3/OneDrive - National University of Singapore/Documents/NUS Masters/ME5415 Advanced Soft Robotics/Design Project/CAD/'
 
-cadFilePath = 'C:/Users/yonx3/OneDrive - National University of Singapore/Documents/NUS Masters/ME5415 Advanced Soft Robotics/Design Project/CAD/'
 
 def add_gripper(rootNode):
-    add_marker(rootNode, 1, [-20, -10, 90], 5.0)
-    add_marker(rootNode, 2, [5, 10, 110], 5.0)
+    # add_marker(rootNode, 1, [-20, -10, 90], 5.0)
+    # add_marker(rootNode, 2, [5, 10, 110], 5.0)
 
     gripper = rootNode.addChild('gripper')
 
 
-    controller = gripper.addChild('controller') # Controls movement of gripper
-    controller.addObject('MechanicalObject', name='rigidParticle', template='Vec3d', position=f'{radius} 0 {zHeight+5} 0 0 0 1', showObject='1', showObjectScale='0.5')
+    # controller = gripper.addChild('controller') # Controls movement of gripper
+    # controller.addObject('MechanicalObject', name='rigidParticle', template='Vec3d', position=f'{radius} 0 {zHeight+5} 0 0 0 1', showObject='1', showObjectScale='0.5')
     # controller.addObject('UniformMass', totalMass= 0.0001)
     # controller.addObject('EulerImplicitSolver', name='odesolver', rayleighStiffness=0.1, rayleighMass=0.1)
     # controller.addObject('SparseLDLSolver', name='preconditioner')
@@ -44,7 +43,15 @@ def add_gripper(rootNode):
         # Finger Model	 						 #
         ##########################################
         rotation = [-90, 0, 360 - angles[i]*180/math.pi]
-        finger = gripper.addChild('finger'+str(i+1))
+
+        # controller = gripper.addChild(f'finger{i+1}Controller')
+        # controller.addObject('MechanicalObject', name='rigidParticle', template='Vec3d', translation = translations[i], rotation=rotation, showObject='1', showObjectScale='0.5')
+        # controller.addObject('MeshVTKLoader', name='loader', filename=cadFilePath+'sphere.vtk', rotation=rotation, translation = translations[i])
+        # controller.addObject('MeshTopology', src='@loader', name='container')
+        # controller.addObject('MechanicalObject', name='rigidParticle', template='Vec3d', showIndices=False, showIndicesScale=4e-5)
+
+
+        finger = gripper.addChild(f'finger{i+1}')
         finger.addObject('EulerImplicitSolver', name='odesolver', rayleighStiffness=0.1, rayleighMass=0.1)
         finger.addObject('SparseLDLSolver', name='preconditioner')
 
@@ -63,27 +70,26 @@ def add_gripper(rootNode):
         finger.addObject('BoxROI', name='boxROI', box=box) # Basically bounding box of model
         finger.addObject('BoxROI', name='boxROISubTopo', box=[-30, -10, 0, 20, 10, 130], strict=False)
 
-        # finger.addObject('MechanicalObject', name='rigidParticle', template='Rigid3d')
-        gripper.addObject('AttachProjectiveConstraint', template='Vec3d', object1='@controller/rigidParticle', indices1='0', 
-                          object2=f'@finger{i+1}/tetras', indices2='10', constraintFactor='1', twoWay='False')
+        # finger.addObject('BarycentricMapping', name='mapping',  mapForces=False, mapMasses=False) # Maps the finger to its parent controller
+
+        # gripper.addObject('AttachProjectiveConstraint', template='Vec3d', object1='@controller/rigidParticle', indices1='0', 
+        #                   object2=f'@finger{i+1}/tetras', indices2='10', constraintFactor='1', twoWay='False')
         # gripper.addObject('RigidMapping', template='Rigid3d', input='@controller/rigidParticle', output='@finger{i+1}/boxROI.indices')
 
         # gripper.addObject('AttachProjectiveConstraint', template='Vec3d', object1='@controller/rigidParticle', indices1='0', 
         #                   object2=f'@finger{i+1}/tetras', indices2='@boxROI.indices', constraintFactor='1', twoWay='False')
 
-        # topPoint = [10.000000000000007, 22.9588190858165, 100.0]
-        # points = finger.boxROI.positionsfinger.boxROI.indices
 
         # Very large stiffness to essentially fix object in space, using the boxROI as a fixing point
-        # if i == 0:
-        #     # finger.addObject('RestShapeSpringsForceField', points='@boxROI.indices', stiffness=1e12, angularStiffness=1e12)
-        #     # finger.addObject('RestShapeSpringsForceField', points='@boxROI.pointsInROI', stiffness=1e12, angularStiffness=1e12)
-        #     # finger.addObject('RestShapeSpringsForceField', points='@boxROI.positions[10]', stiffness=1, angularStiffness=1e12)
-        #     finger.addObject('FixedProjectiveConstraint', name='fixedpoint', indices='@boxROI.indices') #, mstate="1")
-        #     # print(finger.fixedpoint.bbox)
-        # else:
-        #     # finger.addObject('RestShapeSpringsForceField', points='@../finger1/boxROI.indices', stiffness=1e12, angularStiffness=1e12)
-        #     finger.addObject('FixedProjectiveConstraint', name='fixedpoint', indices='@../finger1/boxROI.indices')
+        if i == 0:
+            # finger.addObject('RestShapeSpringsForceField', points='@boxROI.indices', stiffness=1e12, angularStiffness=1e12)
+            # finger.addObject('RestShapeSpringsForceField', points='@boxROI.pointsInROI', stiffness=1e12, angularStiffness=1e12)
+            # finger.addObject('RestShapeSpringsForceField', points='@boxROI.positions[10]', stiffness=1, angularStiffness=1e12)
+            finger.addObject('FixedProjectiveConstraint', name='fixedpoint', indices='@boxROI.indices') #, mstate="1")
+            # print(finger.fixedpoint.bbox)
+        else:
+            # finger.addObject('RestShapeSpringsForceField', points='@../finger1/boxROI.indices', stiffness=1e12, angularStiffness=1e12)
+            finger.addObject('FixedProjectiveConstraint', name='fixedpoint', indices='@../finger1/boxROI.indices')
 
         finger.addObject('LinearSolverConstraintCorrection', name='preconditioner')#solverName='preconditioner') # Solves the correction due to effect of pneunet cavity on finger
 

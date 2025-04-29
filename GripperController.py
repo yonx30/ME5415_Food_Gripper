@@ -34,10 +34,21 @@ class WholeGripperController(Sofa.Core.Controller):
         
         self.constraints = []
         self.dofs = []
-        self.controller = self.node.gripper.controller.getMechanicalState()
+        # self.controller = self.node.gripper.controller.getMechanicalState()
         for i in range(1, 4):
-            self.dofs.append(self.node.gripper.getChild('finger' + str(i)).getMechanicalState())
-            self.constraints.append(self.node.gripper.getChild('finger' + str(i)).cavity.SurfacePressureConstraint)
+            self.dofs.append(self.node.gripper.getChild(f'finger{i}').getMechanicalState())
+            self.constraints.append(self.node.gripper.getChild(f'finger{i}').cavity.SurfacePressureConstraint)
+
+            # self.dofs.append(self.node.gripper.getChild(f'finger{i}Controller').finger.getMechanicalState())
+            # self.constraints.append(self.node.gripper.getChild(f'finger{i}Controller').finger.cavity.SurfacePressureConstraint)
+
+        self.plane = self.node.Plane.getMechanicalState()
+                # print(self.node.Plane.getMechanicalState())
+                # plane = self.node.Plane.getMechanicalState()
+                # print(plane.position.value)
+                # results = moveRestPos(plane.position.value, 0.0, 0.0, -3.0)
+                # plane.position.value = results
+        
         print("Controller loaded!")
         # self.dofs.append(kw["finger"].getMechanicalState())
         # self.constraints.append(kw["finger"].Cavity.SurfacePressureConstraint)
@@ -74,11 +85,12 @@ class WholeGripperController(Sofa.Core.Controller):
         # print(self.node.finger1.boxROI.pointsInROI.toList())
         # print(self.node.finger1.boxROI.indices.toList())
         
-        increment = 0.05
+        inflateIncrement = 0.05
+        moveIncrement = 1.0
 
         # print("dsads")
         # for i in range(3):
-        #     pressureValue = self.constraints[i].value.value[0] + increment
+        #     pressureValue = self.constraints[i].value.value[0] + inflateIncrement
         #     if pressureValue > 1.5:
         #         pressureValue = 1.5
         #     self.constraints[i].value = [pressureValue]
@@ -86,7 +98,7 @@ class WholeGripperController(Sofa.Core.Controller):
 
         if e["key"] == Sofa.constants.Key.space:
             for i in range(3):
-                pressureValue = self.constraints[i].value.value[0] + increment
+                pressureValue = self.constraints[i].value.value[0] + inflateIncrement
                 if pressureValue > self.pressureLimits[1]:
                     pressureValue = self.pressureLimits[1]
                 self.constraints[i].value = [pressureValue]
@@ -94,55 +106,78 @@ class WholeGripperController(Sofa.Core.Controller):
 
         if e["key"] == Sofa.constants.Key.minus:
             for i in range(3):
-                pressureValue = self.constraints[i].value.value[0] - increment
+                pressureValue = self.constraints[i].value.value[0] - inflateIncrement
                 if pressureValue < self.pressureLimits[0]:
                     pressureValue = self.pressureLimits[0]
                 self.constraints[i].value = [pressureValue]
             print(f"Deflate: {pressureValue}")
 
         elif e["key"] == Sofa.constants.Key.uparrow:
-            for i in range(3):
-                # results = moveRestPos(self.dofs[i].rest_position.value, 3.0, 0.0, 0.0)
-                # self.dofs[i].rest_position.value = results
-                print(self.controller.rest_position.value)
-                results = moveRestPos(self.controller.rest_position.value, 3.0, 0.0, 0.0)
-                self.controller.rest_position.value = results
+            # for i in range(3):
+            #     results = moveRestPos(self.dofs[i].rest_position.value, 3.0, 0.0, 0.0)
+            #     self.dofs[i].rest_position.value = results
+
+            results = moveRestPos(self.plane.position.value, 0.0, 0.0, -moveIncrement/2)
+            self.plane.position.value = results
+
+            # print([list(self.node.camera.position.value)])
+            results = np.array(self.node.camera.position.value) + np.array([0.0, 0.0, -moveIncrement/2])
+            self.node.camera.position.value = list(results)
+
 
         elif e["key"] == Sofa.constants.Key.downarrow:
-            for i in range(3):
-                results = moveRestPos(self.dofs[i].rest_position.value, -3.0, 0.0, 0.0)
-                self.dofs[i].rest_position.value = results
+            # for i in range(3):
+                # results = moveRestPos(self.dofs[i].rest_position.value, -3.0, 0.0, 0.0)
+                # self.dofs[i].rest_position.value = results
+
+            results = moveRestPos(self.plane.position.value, 0.0, 0.0, moveIncrement/2)
+            self.plane.position.value = results
+
+            results = np.array(self.node.camera.position.value) + np.array([0.0, 0.0, moveIncrement/2])
+            self.node.camera.position.value = list(results)
 
         elif e["key"] == Sofa.constants.Key.leftarrow:
-            dy = 3.0 * math.cos(self.rotAngle)
-            dz = 3.0 * math.sin(self.rotAngle)
-            for i in range(3):
-                results = moveRestPos(self.dofs[i].rest_position.value, 0.0, dy, dz)
-                self.dofs[i].rest_position.value = results
-            self.centerPosY = self.centerPosY + dy
-            self.centerPosZ = self.centerPosZ + dz
+            # dy = 3.0 * math.cos(self.rotAngle)
+            # dz = 3.0 * math.sin(self.rotAngle)
+            # for i in range(3):
+            #     results = moveRestPos(self.dofs[i].rest_position.value, 0.0, dy, dz)
+            #     self.dofs[i].rest_position.value = results
+            # self.centerPosY = self.centerPosY + dy
+            # self.centerPosZ = self.centerPosZ + dz
+
+            results = moveRestPos(self.plane.position.value, moveIncrement, 0.0, 0.0)
+            self.plane.position.value = results
+
+            results = np.array(self.node.camera.position.value) + np.array([moveIncrement/2, 0.0, 0.0])
+            self.node.camera.position.value = list(results)
 
         elif e["key"] == Sofa.constants.Key.rightarrow:
-            dy = -3.0 * math.cos(self.rotAngle)
-            dz = -3.0 * math.sin(self.rotAngle)
-            for i in range(3):
-                results = moveRestPos(self.dofs[i].rest_position.value, 0.0, dy, dz)
-                self.dofs[i].rest_position.value = results
-            self.centerPosY = self.centerPosY + dy
-            self.centerPosZ = self.centerPosZ + dz
+            # dy = -3.0 * math.cos(self.rotAngle)
+            # dz = -3.0 * math.sin(self.rotAngle)
+            # for i in range(3):
+            #     results = moveRestPos(self.dofs[i].rest_position.value, 0.0, dy, dz)
+            #     self.dofs[i].rest_position.value = results
+            # self.centerPosY = self.centerPosY + dy
+            # self.centerPosZ = self.centerPosZ + dz
 
-        # Direct rotation
-        elif e["key"] == "A":
-            for i in range(3):
-                results = rotateRestPos(self.dofs[i].rest_position.value, math.pi / 16, self.centerPosY,
-                                        self.centerPosZ)
-                self.dofs[i].rest_position.value = results
-            self.rotAngle = self.rotAngle + math.pi / 16
+            results = moveRestPos(self.plane.position.value, -moveIncrement, 0.0, 0.0)
+            self.plane.position.value = results
 
-        # Indirect rotation
-        elif e["key"] == "Q":
-            for i in range(3):
-                results = rotateRestPos(self.dofs[i].rest_position.value, -math.pi / 16, self.centerPosY,
-                                        self.centerPosZ)
-                self.dofs[i].rest_position.value = results
-            self.rotAngle = self.rotAngle - math.pi / 16
+            results = np.array(self.node.camera.position.value) + np.array([-moveIncrement/2, 0.0, 0.0])
+            self.node.camera.position.value = list(results)
+
+        # # Direct rotation
+        # elif e["key"] == "A":
+        #     for i in range(3):
+        #         results = rotateRestPos(self.dofs[i].rest_position.value, math.pi / 16, self.centerPosY,
+        #                                 self.centerPosZ)
+        #         self.dofs[i].rest_position.value = results
+        #     self.rotAngle = self.rotAngle + math.pi / 16
+
+        # # Indirect rotation
+        # elif e["key"] == "Q":
+        #     for i in range(3):
+        #         results = rotateRestPos(self.dofs[i].rest_position.value, -math.pi / 16, self.centerPosY,
+        #                                 self.centerPosZ)
+        #         self.dofs[i].rest_position.value = results
+        #     self.rotAngle = self.rotAngle - math.pi / 16

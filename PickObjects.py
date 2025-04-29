@@ -72,5 +72,5 @@ def add_sphere(rootNode, position:list, mass:float, scale:float):
     # sphereVisu.addObject('MeshOBJLoader', name='loader', filename='details/data/mesh/Sphere.obj')
     # sphereVisu.addObject('MeshOBJLoader', name='loader', filename='details/data/mesh/Sphere.stl')
 
-    sphereVisu.addObject('OglModel', name='Visual', src='@loader', color=[0.0, 0.1, 0.5], scale=scale)
+    sphereVisu.addObject('OglModel', name='Visual', src='@loader', color=[1.0, 1.0, 0.0], scale=scale)
     sphereVisu.addObject('RigidMapping')
