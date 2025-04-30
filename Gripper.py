@@ -19,15 +19,17 @@ angles=[0,angle1, angle2]
 cadFilePath = 'C:/Users/yonx3/OneDrive - National University of Singapore/Documents/NUS Masters/ME5415 Advanced Soft Robotics/Design Project/CAD/'
 
 
-def add_gripper(rootNode):
+def add_gripper(rootNode, numGrippers:int=3):
     # add_marker(rootNode, 1, [-20, -10, 90], 5.0)
     # add_marker(rootNode, 2, [5, 10, 110], 5.0)
 
     gripper = rootNode.addChild('gripper')
 
-    for i in range(3):
-        # Add 3 fingers for the gripper
-        rotation = [-90, 0, 360 - angles[i]*180/math.pi]
+    for i in range(numGrippers):
+        # Add numGrippers fingers for the gripper
+        rotation = [-90, 0, 360 - angles[i]*180/math.pi] # In gripping position
+
+        # rotation = [0, 0, 360 - angles[i]*180/math.pi] # Flat
 
         finger = gripper.addChild(f'finger{i+1}')
         # Add solvers
@@ -84,9 +86,9 @@ def add_gripper(rootNode):
         collisionFinger = finger.addChild('collisionFinger')
 
         if i < 2:
-            collisionFinger.addObject('MeshSTLLoader', name='loader', filename=cadFilePath+'finger_flat.stl', translation = translations[i], rotation=rotation)
+            collisionFinger.addObject('MeshSTLLoader', name='loader', filename=cadFilePath+'finger_hooked.stl', translation = translations[i], rotation=rotation)
         else:
-            collisionFinger.addObject('MeshSTLLoader', name='loader', filename=cadFilePath+'finger_flat.stl', translation = translations[i], rotation=rotation)
+            collisionFinger.addObject('MeshSTLLoader', name='loader', filename=cadFilePath+'finger_hooked.stl', translation = translations[i], rotation=rotation)
         
         collisionFinger.addObject('MeshTopology', src='@loader', name='topo') # Creates a topology using the mesh loaded by STL loader above
         collisionFinger.addObject('MechanicalObject', name='collisMech')
@@ -99,16 +101,16 @@ def add_gripper(rootNode):
         modelVisu = finger.addChild('visu')
         # modelVisu.addObject('MeshSTLLoader', name='loader', filename=cadFilePath+'finger.stl')
         modelVisu.addObject('MeshVTKLoader', name='loader', filename=cadFilePath+'finger.vtk', rotation=rotation, translation = translations[i])
-        modelVisu.addObject('OglModel', src='@loader', color=[0.7, 0.7, 0.7, 0.6])
+        modelVisu.addObject('OglModel', src='@loader', color=[0.4, 0.4, 0.4, 0.6])#color=[0.7, 0.7, 0.7, 0.6])
         modelVisu.addObject('BarycentricMapping')
 
 
-         # Add a visual object to visualise fingernail with different colour
+        # #  Add a visual object to visualise fingernail with different colour
         modelVisu = finger.addChild('fingernail') #fingernail.addChild('visu')
         if i < 2:
-            modelVisu.addObject('MeshVTKLoader', name='loader', filename=cadFilePath+'fingernail_flat.vtk', translation = translations[i], rotation=rotation)
+            modelVisu.addObject('MeshVTKLoader', name='loader', filename=cadFilePath+'fingernail_hooked.vtk', translation = translations[i], rotation=rotation)
         else:
-            modelVisu.addObject('MeshVTKLoader', name='loader', filename=cadFilePath+'fingernail_flat.vtk', translation = translations[i], rotation=rotation)
+            modelVisu.addObject('MeshVTKLoader', name='loader', filename=cadFilePath+'fingernail_hooked.vtk', translation = translations[i], rotation=rotation)
         modelVisu.addObject('OglModel', src='@loader', color=[1.0, 0.8, 0.0, 1.0])
         modelVisu.addObject('BarycentricMapping')
 

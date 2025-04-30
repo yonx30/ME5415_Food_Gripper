@@ -42,6 +42,47 @@ def add_cube(rootNode, position:list, mass:float, scale:float):
     cubeVisu.addObject('OglModel', name='Visual', src='@loader', color=[0.0, 0.1, 0.5], scale=scale) # Visual mesh *slightly* smaller than actual object model/collision mesh
     cubeVisu.addObject('RigidMapping')
 
+
+def add_fixed_cube(rootNode, position:list, scale:float):
+    '''Adds rigid cube to scene to pickup'''
+    cube = rootNode.addChild('cube')
+
+    # Solver/time integrators to calculate system positions and velocities at each time step
+    cube.addObject('EulerImplicitSolver', name='odesolver')
+    cube.addObject('SparseLDLSolver', name='linearSolver')
+    cube.addObject('MechanicalObject', template='Rigid3', position=position+[0, 0, 0, 1])
+    cube.addObject('UniformMass', totalMass=1.0)
+    cube.addObject('UncoupledConstraintCorrection')
+
+    #collision
+    cubeCollis = cube.addChild('cubeCollis')
+
+    cubeCollis.addObject('MeshOBJLoader', name='loader', filename='mesh/smCube27.obj', triangulate=True,  scale=scale)
+
+    cubeCollis.addObject('MeshTopology', src='@loader')
+    cubeCollis.addObject('MechanicalObject')
+    cubeCollis.addObject('TriangleCollisionModel')
+    cubeCollis.addObject('LineCollisionModel')
+    cubeCollis.addObject('PointCollisionModel')
+    cubeCollis.addObject('RigidMapping') # Maps DOFs of cube mesh to a rigid SOFA object (use other types of mapping for soft objects)
+
+    #visualization
+    cubeVisu = cube.addChild('cubeVisu')
+
+    cubeVisu.addObject('MeshOBJLoader', name='loader', filename='mesh/smCube27.obj')
+
+    cubeVisu.addObject('OglModel', name='Visual', src='@loader', color=[1.0, 1.0, 0.0], scale=scale+0.1) # Visual mesh *slightly* smaller than actual object model/collision mesh
+    cubeVisu.addObject('RigidMapping')
+
+    # Use a bounding box Region of Interest to get the topmost points in the gripper only
+    box = [position[0]-50, position[1]-50, 0, position[0]+50, position[1]-50, 105]
+    cube.addObject('BoxROI', name='boxROI', box=box, strict=False) 
+
+    # Fix the topmost points of the gripper
+    cube.addObject('FixedProjectiveConstraint', name='fixedpoint', indices='0')#indices='@boxROI.indices')
+
+
+
 def add_sphere(rootNode, position:list, mass:float, scale:float):
     '''Adds rigid sphere to scene to pickup'''
     sphere = rootNode.addChild('sphere')
@@ -156,7 +197,7 @@ def add_carrot(rootNode, position:list, mass:float):
     poissonRatio = 0.4
 
     add_deformable_object(rootNode, position, mass, scale=0.6, modulus=youngsModulus, poissonRatio=poissonRatio, 
-                          vtk_path='carrot.vtk', stl_path='carrot.stl', colour=[1.0, 0.6, 0, 1], name='carrot', modelPositionCorrection=[-15, -15,0]) 
+                          vtk_path='carrot.vtk', stl_path='carrot.stl', colour=[0.9, 0.6, 0, 1], name='carrot', modelPositionCorrection=[-15, -15,0]) 
     
 def add_green_beans(rootNode, position:list, mass:float):
     '''Adds deformable bean to scene to pickup'''
@@ -216,3 +257,13 @@ def add_orangeJuice(rootNode, position:list, mass:float):
 
     add_deformable_object(rootNode, position, mass, scale=0.5, modulus=youngsModulus, poissonRatio=poissonRatio, 
                           vtk_path='cup.vtk', stl_path='cup.stl', colour=[1, 0.8, .2, 1], name='orangeJuice', modelPositionCorrection=[-23,24,0], rotation=[90,0,0]) 
+    
+
+def add_eggs(rootNode, position:list, mass:float):
+    '''Adds deformable eggs to scene to pickup'''
+
+    youngsModulus = 0.045 # 45 KPa
+    poissonRatio = 0.4
+
+    add_deformable_object(rootNode, position, mass, scale=1.0, modulus=youngsModulus, poissonRatio=poissonRatio, 
+                          vtk_path='eggs.vtk', stl_path='eggs.stl', colour=[1, 1.0, 0.0, 1], name='eggs', modelPositionCorrection=[-12,0,0]) 
