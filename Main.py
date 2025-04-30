@@ -73,10 +73,10 @@ def add_plane(rootNode):
     return rootNode
 
 def add_camera(rootNode, position:list):
-    # rootNode.addObject('InteractiveCamera', name='camera', position=f'{position[0]} {position[1]} {position[2]}', 
-    #                    lookAt=f"{position[0]} 0 0", distance=f'{position[0]} {position[1]} {position[2]}')
-    rootNode.addObject('InteractiveCamera', name='camera', position=f'0 0 50', lookAt=[0,0,0], distance=50, projectionType=1,
-                       minBBox=[-5, 0, -8.66],  maxBBox=[10, 10, 8.66],  widthViewport=190, heightViewport=552)
+    rootNode.addObject('InteractiveCamera', name='camera', position=f'{position[0]} {position[1]} {position[2]}', 
+                       lookAt=f"{position[0]} 0 0", distance=f'{position[0]} {position[1]} {position[2]}')
+    # rootNode.addObject('InteractiveCamera', name='camera', position=f'0 0 50', lookAt=[0,0,0], distance=50, projectionType=1,
+    #                    minBBox=[-5, 0, -8.66],  maxBBox=[10, 10, 8.66],  widthViewport=190, heightViewport=552)
                      #  orientation=[0, 0, 0, 1], distance='0 0 50')
     # lighting = rootNode.addChild('lighting')
     # lighting.addObject('LightManager')
@@ -90,15 +90,15 @@ def createScene(rootNode):
     add_pipelines(rootNode)
     add_plane(rootNode)
 
-    add_camera(rootNode, [-100, -5000, 50])
+    add_camera(rootNode, [20, -300, 150])
     add_gripper(rootNode, numGrippers)
 
     # add_sphere(rootNode, [30, 0, 20], 0.0001, 15)
     # add_cube(rootNode, [24, 0, 20], 1.0, 6)
     # add_fixed_cube(rootNode, [23, 0, 20], 6.1)
 
-    add_sausage(rootNode, [-35, -60, 10], 0.007) # 70g
-    # add_meatball(rootNode, [30, -5, 5], 0.02) # 20g
+    # add_sausage(rootNode, [-35, -60, 10], 0.007) # 70g
+    add_meatball(rootNode, [30, -5, 10], 0.02) # 20g
     # add_brocolli(rootNode, [25, 0, 5], 0.02) # 20g
     # add_carrot(rootNode, [20, -100, 5], 0.1) # 100g
     # add_green_beans(rootNode, [15, 0, 5], 0.0000132) # 132mg

@@ -187,7 +187,7 @@ def add_meatball(rootNode, position:list, mass:float):
     poissonRatioMeatball = 0.49
 
     add_deformable_object(rootNode, position, mass, scale=1.0, modulus=youngModulusMeatball, poissonRatio=poissonRatioMeatball, 
-                          vtk_path='meatball.vtk', stl_path='meatball.stl', colour=[1.0, 0, 0, 1], name='meatball')
+                          vtk_path='meatball.vtk', stl_path='meatball.stl', colour=[1.0, 0, 0, 1], name='meatball', modelPositionCorrection=[-13, 0, -10])
     
 
 def add_carrot(rootNode, position:list, mass:float):
