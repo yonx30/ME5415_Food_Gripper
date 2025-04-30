@@ -4,7 +4,7 @@ from GripperController import WholeGripperController
 from PickObjects import *
 from Gripper import add_gripper
 
-cadFilePath = 'C:/Users/yonx3/OneDrive - National University of Singapore/Documents/NUS Masters/ME5415 Advanced Soft Robotics/Design Project/CAD/'
+cadFilePath = 'CAD/'
 
 def add_plugins(rootNode):
     '''Loads in required plugins to root node'''
