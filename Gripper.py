@@ -16,7 +16,7 @@ translateFinger3 = str(radius + radius*math.sin(angle2-math.pi/2)) + ' ' + str(r
 translations= [translateFinger1,translateFinger2, translateFinger3]
 angles=[0,angle1, angle2]
 
-cadFilePath = 'C:/Users/yonx3/OneDrive - National University of Singapore/Documents/NUS Masters/ME5415 Advanced Soft Robotics/Design Project/CAD/'
+cadFilePath = 'CAD/'
 
 
 def add_gripper(rootNode, numGrippers:int=3):
